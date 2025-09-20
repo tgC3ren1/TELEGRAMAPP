@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>ZBcoin – Royal Flip</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#070B18; --panel:#0C1430B3; --ring:#1C2B62; --ink:#E9F1FF; --muted:#A7B8FF;
-  --accent:#2F80ED; --ok:#27C46B; --warn:#FFD04D; --depth:18px;
+  --accent:#2F80ED; --ok:#27C46B; --depth:18px;
 }
 *{box-sizing:border-box} html,body{height:100%}
 body{
@@ -37,6 +37,7 @@ body{
 .btn.primary{background:linear-gradient(180deg,#3793ff,#2f80ed);color:#fff}
 .btn.ok{background:linear-gradient(180deg,#32d97f,#27c46b);color:#061016}
 .btn:active{transform:translateY(1px)}
+.footer{padding:10px 18px;border-top:1px solid #ffffff12;color:#9db1ff9c;font-size:12px}
 
 /* SAHNE */
 .stage{height:456px;position:relative;display:grid;place-items:center;perspective:1600px}
@@ -44,20 +45,23 @@ body{
 .shadow{position:absolute;bottom:60px;width:300px;height:110px;border-radius:50%;
   background:radial-gradient(ellipse at center,#0008 0%,#0006 45%,#0000 75%);filter:blur(12px);transform-origin:center}
 
-/* 3D COIN */
+/* 3D COIN (ÇAKIŞMA FİX’Lİ) */
 .coin{position:absolute;width:260px;height:260px;transform-style:preserve-3d;filter:drop-shadow(0 22px 26px #0008)}
 .face{position:absolute;inset:0;border-radius:50%;transform-style:preserve-3d;backface-visibility:hidden}
-.surface{position:absolute;inset:0;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transform:translateZ(1px)}
-.surface .label{font-size:48px;font-weight:900;color:#0b0b0b;text-shadow:0 1px 0 #fff9}
-.surface .sub{font-size:16px;margin-top:8px;font-weight:700;color:#202020}
-.front{transform:translateZ(var(--depth));
+.front{transform:translateZ(calc(var(--depth) + 0.4px));
   background:radial-gradient(circle at 33% 28%,#fff2a6 0%,#ffd769 40%,#ffc13b 63%,#ffa600 78%,#ff9700 100%);
   border:4px solid #ffb000}
-.back{transform:translateZ(calc(var(--depth) - 0.1px)) rotateY(180deg);
+.back{transform:translateZ(calc(var(--depth) - 0.4px)) rotateY(180deg);
   background:radial-gradient(circle at 67% 32%,#e7f0ff 0%,#c7d9ff 40%,#88a8ff 63%,#5d7fff 78%,#3c63ff 100%);
   border:4px solid #6f8fff}
-.back .surface{transform:scaleX(-1) translateZ(1px)} /* Tura metnini düzelt */
+/* metin sargıları – iki yüzde de 1.2px öne taşı, TURA’yı düz çevir */
+.surface{position:absolute;inset:0;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:translateZ(1.2px)}
+.back .surface{transform:scaleX(-1) translateZ(1.2px)}
+.surface .label{font-size:46px;line-height:1;letter-spacing:.6px;font-weight:900;color:#0b0b0b;text-shadow:0 1px 0 #fff9}
+.surface .sub{font-size:14px;margin-top:8px;font-weight:700;color:#202020}
+/* görünmeyen yüzü gizle – animasyon bitince sınıf ekliyoruz */
+.coin.show-yazi .back .surface{visibility:hidden}
+.coin.show-tura .front .surface{visibility:hidden}
 
 /* yivli kenar */
 .rim{position:absolute;inset:0;border-radius:50%;transform:translateZ(calc(var(--depth) * -1)) rotateY(90deg);
@@ -72,7 +76,11 @@ body{
 
 /* confetti */
 .confetti{position:fixed;width:8px;height:14px;border-radius:1px;top:-20px;left:0;pointer-events:none;z-index:9999}
-.footer{padding:10px 18px;border-top:1px solid #ffffff12;color:#9db1ff9c;font-size:12px;display:flex;justify-content:space-between}
+
+/* AUTH MODAL */
+#authModal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:9999}
+#authCard{width:min(380px,92%);background:#0e1640;border:1px solid #ffffff1f;border-radius:16px;padding:16px}
+#authCard input{padding:10px;border-radius:10px;border:1px solid #ffffff22;background:#0c1530;color:#dfe8ff}
 </style>
 </head>
 <body>
@@ -93,19 +101,11 @@ body{
 
       <div class="coin" id="coin" aria-label="Yazı/Tura">
         <div class="face front">
-          <div class="surface">
-            <div class="label">YAZI</div>
-            <div class="sub">ZBcoin</div>
-          </div>
+          <div class="surface"><div class="label">YAZI</div><div class="sub">ZBcoin</div></div>
         </div>
-
         <div class="rim"></div>
-
         <div class="face back">
-          <div class="surface">
-            <div class="label">TURA</div>
-            <div class="sub">ZBcoin</div>
-          </div>
+          <div class="surface"><div class="label">TURA</div><div class="sub">ZBcoin</div></div>
         </div>
       </div>
     </div>
@@ -121,15 +121,52 @@ body{
 
   <div class="footer">
     <div>Adil RNG: <code>crypto.getRandomValues</code> • Haptics + WebAudio • Ultra 3D</div>
-    <div><a href="admin.html" style="color:#8fb5ff;text-decoration:none">Admin Panel ↗</a></div>
+    <!-- ADMIN LİNKİ KALDIRILDI -->
+  </div>
+</div>
+
+<!-- Auth Modal -->
+<div id="authModal">
+  <div id="authCard">
+    <h3 style="margin:0 0 10px">Giriş / Kayıt</h3>
+    <div style="display:grid;gap:8px">
+      <input id="inName"  placeholder="Kullanıcı adı (kayıt için)">
+      <input id="inEmail" placeholder="E-posta">
+      <input id="inPass"  placeholder="Şifre" type="password">
+      <div style="display:flex;gap:8px">
+        <button id="btnLogin"  class="btn primary" style="flex:1">Giriş yap</button>
+        <button id="btnSignup" class="btn ok"      style="flex:1">Kayıt ol</button>
+      </div>
+      <button id="btnCloseAuth" class="btn" style="width:100%">Kapat</button>
+      <div id="authMsg" style="color:#a7b8ff;font-size:12px"></div>
+    </div>
   </div>
 </div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
+/* TODO: Firebase configini doldur */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "…",
+  appId: "…"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+</script>
+
+<script>
+/* ====== OYUN DURUMU ====== */
 const tg = window.Telegram?.WebApp; try{ tg?.expand(); }catch(e){}
-const LS="zb_royal_flip_v2";
-const LOGS="zb_royal_logs_v1"; // admin için yerel demo log’u
+const LS="zb_royal_flip_v3";
 const S = load() || { bal:0, left:3, pick:null };
 function load(){ try{return JSON.parse(localStorage.getItem(LS)||"")}catch(_){return null} }
 function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
@@ -152,11 +189,11 @@ function render(){
 }
 render();
 
-/* Ses */
+/* ====== SES ====== */
 const AC = window.AudioContext || window.webkitAudioContext; let actx=null;
 function audioReady(){ if(!AC) return; if(!actx) actx=new AC(); }
-function fxWhoosh(){
-  if(!actx) return; const o=actx.createOscillator(), g=actx.createGain();
+function fxWhoosh(){ if(!actx) return;
+  const o=actx.createOscillator(), g=actx.createGain();
   o.type='sawtooth'; o.frequency.setValueAtTime(180, actx.currentTime);
   o.frequency.exponentialRampToValueAtTime(60, actx.currentTime+0.6);
   g.gain.setValueAtTime(0.0001, actx.currentTime);
@@ -164,8 +201,8 @@ function fxWhoosh(){
   g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime+0.72);
   o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime+0.74);
 }
-function fxDing(){
-  if(!actx) return; const o=actx.createOscillator(), g=actx.createGain();
+function fxDing(){ if(!actx) return;
+  const o=actx.createOscillator(), g=actx.createGain();
   o.type='triangle'; o.frequency.setValueAtTime(880, actx.currentTime);
   g.gain.setValueAtTime(0.0001, actx.currentTime);
   g.gain.exponentialRampToValueAtTime(0.35, actx.currentTime+0.01);
@@ -173,7 +210,7 @@ function fxDing(){
   o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime+0.52);
 }
 
-/* Etkileşim */
+/* ====== ETKİLEŞİM ====== */
 btnY.onclick=()=>{ S.pick="YAZI"; save(); render(); msg.textContent="Seçim: YAZI"; };
 btnT.onclick=()=>{ S.pick="TURA"; save(); render(); msg.textContent="Seçim: TURA"; };
 
@@ -191,13 +228,15 @@ function spinOnce(choice){
   // Adil sonuç
   const u32=new Uint32Array(1); crypto.getRandomValues(u32);
   const result = (u32[0]%2)===0 ? "YAZI" : "TURA";
+
   const baseTurns = 6 + Math.floor(Math.random()*3);
   const endDeg = result==="YAZI" ? baseTurns*360 : baseTurns*360 + 180;
   const dur = 1.7 + Math.random()*0.45;
 
+  coin.classList.remove('anim','wobble','show-yazi','show-tura'); // ikisini de aç
   coin.style.setProperty('--rotX', endDeg+'deg');
   coin.style.setProperty('--dur', dur+'s');
-  coin.classList.remove('anim','wobble'); void coin.offsetWidth;
+  void coin.offsetWidth;
   coin.classList.add('anim','spinning');
   msg.textContent="Fırlatıldı…"; fxWhoosh(); navigator.vibrate?.(10);
 
@@ -210,18 +249,29 @@ function spinOnce(choice){
     if(k<1) requestAnimationFrame(raf);
   })(t0);
 
-  setTimeout(()=>{
-    coin.classList.remove('spinning'); coin.classList.add('wobble'); fxDing();
+  setTimeout(async ()=>{
+    coin.classList.remove('spinning'); coin.classList.add('wobble');
+    coin.classList.add(result==="YAZI" ? 'show-yazi' : 'show-tura'); // görünmeyen yüzü gizle
+    fxDing();
     S.left--; const win=(result===choice); if(win) S.bal+=5; save(); render();
     msg.textContent = result==="YAZI" ? "Sonuç: YAZI (ÖN)" : "Sonuç: TURA (ARKA)";
     resultEl.textContent = win ? `🎉 Doğru bildin! +5 ZB` : `😅 Yanlış tahmin`;
     if(win) confetti(); navigator.vibrate?.(win?[20,40,20]:[12]);
-    // Yerel demo logu (admin.html bunları okur)
-    const logs = JSON.parse(localStorage.getItem(LOGS)||"[]");
-    logs.push({ts:Date.now(), choice, result, win, delta: win?5:0, balance:S.bal});
-    localStorage.setItem(LOGS, JSON.stringify(logs));
-    // Telegram'a sendData (opsiyonel)
+
+    // Firestore'a log yaz
+    const u = auth.currentUser;
+    try{
+      if(u){
+        await db.collection('logs').add({
+          uid: u.uid, choice, result, win, delta: win?5:0, balance: S.bal,
+          ts: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+    }catch(_){}
+
+    // Telegram sendData (opsiyonel)
     try{ window.Telegram?.WebApp?.sendData && window.Telegram.WebApp.sendData(JSON.stringify({event:'flip',choice,result,win,delta:win?5:0,balance:S.bal,left:S.left})); }catch(_){}
+
     btnThrow.disabled=false; busy=false;
   }, dur*1000 + 40);
 }
@@ -244,6 +294,45 @@ let tT=null; function toast(m){let el=document.getElementById('toast'); if(!el){
   el.style.background='#12204b'; el.style.border='1px solid #ffffff20'; el.style.padding='10px 14px';
   el.style.borderRadius='10px'; el.style.boxShadow='0 10px 30px #0008'; el.style.fontWeight='800'; document.body.appendChild(el);}
   el.textContent=m; el.style.opacity='1'; clearTimeout(tT); tT=setTimeout(()=>el.style.opacity='0',1600);}
+
+/* ====== AUTH ====== */
+const authModal = document.getElementById('authModal');
+const inName=document.getElementById('inName'), inEmail=document.getElementById('inEmail'),
+      inPass=document.getElementById('inPass'), authMsg=document.getElementById('authMsg');
+function showAuth(){ authModal.style.display='flex'; }
+function hideAuth(){ authModal.style.display='none'; }
+document.getElementById('btnCloseAuth').onclick = hideAuth;
+
+auth.onAuthStateChanged(async (u)=>{
+  if(!u){ showAuth(); return; }
+  hideAuth();
+  // profil yoksa oluştur
+  try{
+    const p=db.collection('profiles').doc(u.uid); const d=await p.get();
+    if(!d.exists && inName.value.trim()){
+      await p.set({ username: inName.value.trim(), email: u.email, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+  }catch(_){}
+});
+
+document.getElementById('btnSignup').onclick = async ()=>{
+  try{
+    const email=inEmail.value.trim(), pass=inPass.value, name=inName.value.trim();
+    if(!email||!pass||!name) return authMsg.textContent='Lütfen tüm alanları doldurun';
+    const {user}=await auth.createUserWithEmailAndPassword(email,pass);
+    await db.collection('profiles').doc(user.uid).set({ username:name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    authMsg.textContent='Kayıt başarılı, giriş yapıldı.';
+  }catch(e){ authMsg.textContent=e.message; }
+};
+
+document.getElementById('btnLogin').onclick = async ()=>{
+  try{
+    const email=inEmail.value.trim(), pass=inPass.value;
+    if(!email||!pass) return authMsg.textContent='E-posta ve şifre gerekli';
+    await auth.signInWithEmailAndPassword(email,pass);
+    authMsg.textContent='Giriş başarılı.';
+  }catch(e){ authMsg.textContent=e.message; }
+};
 </script>
 </body>
 </html>
