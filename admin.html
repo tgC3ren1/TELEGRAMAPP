@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZBcoin Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070B18;--panel:#0C1430B3;--ring:#1C2B62;--ink:#E9F1FF;--muted:#A7B8FF;--accent:#2F80ED;--ok:#27C46B}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:radial-gradient(1400px 900px at 50% -10%,#1A2A63,#070B18);color:var(--ink);font-family:Inter,system-ui}
+.card{width:min(1100px,96%);margin:24px auto;background:var(--panel);border:1px solid #ffffff1f;border-radius:18px;box-shadow:0 20px 80px #0009;backdrop-filter:blur(12px) saturate(130%)}
+.header{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #ffffff12}
+.h1{font-weight:800;font-size:20px;margin-right:auto}
+.pill{display:inline-flex;gap:8px;align-items:center;background:#0E1A43;border:1px solid #ffffff1f;padding:8px 12px;border-radius:999px;font-weight:800}
+.panel{padding:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{appearance:none;border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;background:#182659;color:#dfe8ff}
+.btn.ok{background:linear-gradient(180deg,#32d97f,#27c46b);color:#061016}
+.btn.primary{background:linear-gradient(180deg,#3793ff,#2f80ed);color:#fff}
+.table{width:100%;border-collapse:collapse;margin-top:10px}
+.table th,.table td{border-bottom:1px solid #ffffff1a;padding:10px 8px;text-align:left;font-size:14px}
+.muted{color:var(--muted);font-size:12px}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.box{background:#0E1A43;border:1px solid #ffffff1f;border-radius:12px;padding:12px;text-align:center}
+.box b{display:block;font-size:22px;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="h1">ZBcoin – Admin</div>
+    <a class="pill" href="index.html" style="text-decoration:none;color:#cfe3ff">← Oyuna dön</a>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <button id="refresh" class="btn primary">Yenile</button>
+      <button id="export" class="btn ok">CSV Dışa Aktar</button>
+      <button id="clear" class="btn">Logları Sil</button>
+      <span class="muted">Bu sayfa <b>yerel demodur</b>. Prod’da veriyi API/DB’den çekeceğiz.</span>
+    </div>
+
+    <div class="kpi" style="margin-top:12px">
+      <div class="box">Toplam Oyun<b id="k_plays">0</b></div>
+      <div class="box">Doğru Tahmin<b id="k_wins">0</b></div>
+      <div class="box">Win Rate<b id="k_rate">0%</b></div>
+      <div class="box">Toplam Dağıtılan ZB<b id="k_zb">0</b></div>
+    </div>
+
+    <table class="table" id="tbl">
+      <thead>
+        <tr>
+          <th>Tarih</th><th>Seçim</th><th>Sonuç</th><th>Kazandı mı</th><th>Δ ZB</th><th>Bakiye</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="muted">Kaynak: <code>localStorage["zb_royal_logs_v1"]</code></div>
+  </div>
+</div>
+
+<script>
+const KEY="zb_royal_logs_v1";
+const tbl=document.querySelector('#tbl tbody');
+const kPlays=document.getElementById('k_plays');
+const kWins=document.getElementById('k_wins');
+const kRate=document.getElementById('k_rate');
+const kZB=document.getElementById('k_zb');
+
+function loadLogs(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(_){ return []; } }
+function fmt(ts){ const d=new Date(ts); return d.toLocaleString(); }
+
+function render(){
+  const rows = loadLogs().reverse();
+  tbl.innerHTML='';
+  let plays=rows.length, wins=0, sum=0;
+  rows.forEach(r=>{
+    if(r.win) wins++; sum += (r.delta||0);
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td>${fmt(r.ts)}</td><td>${r.choice}</td><td>${r.result}</td><td>${r.win?'✅':'—'}</td><td>${r.delta||0}</td><td>${r.balance}</td>`;
+    tbl.appendChild(tr);
+  });
+  kPlays.textContent=plays;
+  kWins.textContent=wins;
+  kRate.textContent = plays? Math.round(wins*100/plays)+'%' : '0%';
+  kZB.textContent = sum;
+}
+render();
+
+// CSV export
+document.getElementById('export').onclick=()=>{
+  const rows = [['timestamp','choice','result','win','delta','balance']];
+  loadLogs().forEach(r=> rows.push([r.ts,r.choice,r.result,r.win,r.delta||0,r.balance]));
+  const csv = rows.map(a=>a.join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='zbcoin_logs.csv'; a.click(); URL.revokeObjectURL(url);
+};
+document.getElementById('refresh').onclick=render;
+document.getElementById('clear').onclick=()=>{ if(confirm('Loglar silinsin mi?')){ localStorage.removeItem(KEY); render(); } };
+
+/* === PROD NOTU ===
+Gerçekte bu sayfayı API'ya bağlamak için yalnızca şunu yapacağız:
+1) loadLogs() yerine fetch('https://api.senin-site.com/logs').then(r=>r.json())
+2) Silme/Export işlemlerini de API endpointleri ile.
+Bu sayfa görsel/akış prototipidir.
+=== */
+</script>
+</body>
+</html>
