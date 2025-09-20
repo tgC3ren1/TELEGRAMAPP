@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZBcoin – Tap Miner (Mini Oyun)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1220; --panel:#111a33; --muted:#9fb4ff; --accent:#2f80ed; --ok:#2cc36b; --warn:#ffcf33; --ring:#223;
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:var(--bg);color:#e8f0ff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+.wrap{min-height:100%;display:grid;place-items:center;padding:22px}
+.card{width:min(980px,95%);background:var(--panel);border:1px solid var(--ring);border-radius:18px;padding:18px}
+h1{margin:0 0 6px;font-size:24px}
+.subtitle{opacity:.85;margin:0 0 14px}
+.top{display:grid;gap:10px;grid-template-columns:1fr;align-items:center}
+@media(min-width:860px){ .top{grid-template-columns:1fr auto auto} }
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#14214a;border:1px solid var(--ring);font-weight:800}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.kv>div{background:#0f193b;border:1px solid var(--ring);border-radius:14px;padding:12px;text-align:center}
+.kv b{font-size:18px}
+.row{display:grid;gap:16px;grid-template-columns:1fr;align-items:start}
+@media(min-width:860px){ .row{grid-template-columns:1.2fr .8fr} }
+.panel{background:#0e162f;border:1px solid var(--ring);border-radius:14px;padding:14px}
+.center{display:flex;align-items:center;justify-content:center}
+.btn{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.ok{background:var(--ok);color:#061016}
+.btn.warn{background:var(--warn);color:#111}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.bar{height:12px;background:#12204a;border:1px solid var(--ring);border-radius:999px;overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,#2f80ed,#5ea1ff)}
+.note{font-size:12px;opacity:.9}
+.list{display:grid;gap:10px}
+.item{background:#0f1a3a;border:1px solid var(--ring);border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:space-between}
+input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--ring);background:#0c1530;color:#cfe3ff}
+.footer{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;opacity:.9;margin-top:12px}
+#result{min-height:24px;text-align:center;font-weight:800;margin-top:10px}
+small.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>🪙 ZBcoin – Tap Miner</h1>
+    <p class="subtitle">Günlük giriş yap, kaz, mini oyunlarla ZBcoin biriktir!</p>
+
+    <div class="top">
+      <div class="badge">Bakiye: <span id="bal">0</span> ZB</div>
+      <div class="badge">Streak: <span id="streak">0</span> gün</div>
+      <div class="badge">Enerji: <span id="energyText">0/100</span></div>
+    </div>
+
+    <div class="kv">
+      <div><div class="note">Enerji</div><div class="bar"><div id="energyFill" class="fill" style="width:0%"></div></div></div>
+      <div><div class="note">Bugün Oyun</div><b><span id="playsLeft">3</span> Flip hakkı</b></div>
+      <div><div class="note">Günlük Claim</div><b id="claimState">Hazır</b></div>
+    </div>
+
+    <div class="row">
+      <!-- Oyunlar -->
+      <div class="panel">
+        <h3 style="margin:0 0 8px">Oyunlar</h3>
+        <div class="list">
+          <div class="item">
+            <div>
+              <b>Daily Claim</b><br><small class="muted">Her gün giriş → streak’e göre ZB verilir (1,2,3,5,8...)</small>
+            </div>
+            <button id="claimBtn" class="btn ok">Al</button>
+          </div>
+
+          <div class="item">
+            <div>
+              <b>Tap Mining</b><br><small class="muted">Her tap 10 enerji harcar → +1~3 ZB (random)</small>
+            </div>
+            <button id="tapBtn" class="btn primary">Tıkla</button>
+          </div>
+
+          <div class="item">
+            <div>
+              <b>Flip Coin (Yazı/Tura)</b><br><small class="muted">Günde 3 hak, kazanırsan +5 ZB</small>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn" data-side="YAZI">Yazı</button>
+              <button class="btn" data-side="TURA">Tura</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="result"></div>
+      </div>
+
+      <!-- Ayarlar / Webhook -->
+      <div class="panel">
+        <h3 style="margin:0 0 8px">Ayarlar</h3>
+        <div class="list">
+          <div class="item">
+            <div>
+              <b>Webhook</b><br><small class="muted">Kazançları API/Sheets’e gönder (opsiyonel)</small>
+            </div>
+            <input id="webhook" placeholder="https://script.google.com/.../exec veya https://api.site.com/zb" />
+          </div>
+          <div class="item">
+            <div>
+              <b>Oyuncu ID</b><br><small class="muted">Telegram ID / kullanıcı adı vb.</small>
+            </div>
+            <input id="player" placeholder="@kullanici veya 123456" />
+          </div>
+          <div class="item">
+            <div>
+              <b>Veriyi Temizle</b><br><small class="muted">Local puan/enerji/veriler sıfırlanır</small>
+            </div>
+            <button id="resetBtn" class="btn warn">Sıfırla</button>
+          </div>
+        </div>
+        <small class="muted">Not: Enerji dakikada 10 puan dolar (tam dolum ~10 dk). Günlük haklar her gece 00:00’da yenilenir.</small>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="note">Adil rastgelelik: `crypto.getRandomValues` kullanılır.</div>
+      <div class="note">Telegram Mini App uyumlu: açıldığında otomatik genişler, `sendData` ile veri gönderebilir.</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+const tg = window.Telegram?.WebApp; try{ tg?.expand(); }catch(e){}
+
+// --------- State ----------
+const LS_KEY = "zbcoin_game_v1";
+const now = ()=> Date.now();
+const todayKey = ()=> {
+  const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+};
+let S = load() || {
+  day: todayKey(),
+  balance: 0,
+  streak: 0,
+  claimedToday: false,
+  playsLeft: 3,
+  energy: 100,
+  lastEnergyAt: now(),
+  webhook: "",
+  playerId: ""
+};
+
+// Enerji: dakikada 10 puan, max 100
+const ENERGY_MAX = 100;
+const ENERGY_PER_MIN = 10;
+
+// --------- Elements ----------
+const balEl = document.getElementById("bal");
+const streakEl = document.getElementById("streak");
+const energyText = document.getElementById("energyText");
+const energyFill = document.getElementById("energyFill");
+const playsLeftEl = document.getElementById("playsLeft");
+const claimStateEl = document.getElementById("claimState");
+const claimBtn = document.getElementById("claimBtn");
+const tapBtn = document.getElementById("tapBtn");
+const resultEl = document.getElementById("result");
+const webhookEl = document.getElementById("webhook");
+const playerEl = document.getElementById("player");
+const resetBtn = document.getElementById("resetBtn");
+
+// --------- Persistence ----------
+function load(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||""); }catch(_){ return null; } }
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+
+// Gün dönümü kontrol
+function rolloverIfNeeded(){
+  if(S.day !== todayKey()){
+    S.day = todayKey();
+    S.claimedToday = false;
+    S.playsLeft = 3;
+    save();
+  }
+}
+
+// Enerji dolumu
+function regenEnergy(){
+  const dt = Math.max(0, now() - (S.lastEnergyAt||now()));
+  const mins = Math.floor(dt / 60000);
+  if(mins > 0){
+    S.energy = Math.min(ENERGY_MAX, S.energy + mins*ENERGY_PER_MIN);
+    S.lastEnergyAt = now();
+    save();
+  }
+}
+
+// Fibonacci benzeri artan streak ödülü (1,2,3,5,8...)
+function streakReward(n){
+  const seq=[1,2]; if(n<=1) return 1; if(n===2) return 2;
+  for(let i=3;i<=n;i++) seq[i]=seq[i-1]+seq[i-2];
+  return Math.min(100, seq[n]); // üst limite al
+}
+
+// UI güncelle
+function render(){
+  balEl.textContent = S.balance;
+  streakEl.textContent = S.streak;
+  playsLeftEl.textContent = S.playsLeft;
+  claimStateEl.textContent = S.claimedToday ? "Alındı" : "Hazır";
+  energyText.textContent = `${S.energy}/${ENERGY_MAX}`;
+  energyFill.style.width = `${(S.energy/ENERGY_MAX)*100}%`;
+  claimBtn.disabled = S.claimedToday;
+  tapBtn.disabled = S.energy < 10;
+  webhookEl.value = S.webhook || "";
+  playerEl.value = S.playerId || "";
+}
+
+// Webhook / Telegram’a gönder
+async function notify(event, payload){
+  // Telegram Mini App sendData
+  try{
+    window.Telegram?.WebApp?.sendData && window.Telegram.WebApp.sendData(JSON.stringify({event, ...payload}));
+  }catch(_){}
+  // Webhook
+  if(!S.webhook) return;
+  try{
+    await fetch(S.webhook, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ event, playerId:S.playerId||null, when: Date.now(), ...payload })
+    });
+  }catch(_){}
+}
+
+// --------- Actions ----------
+claimBtn.addEventListener("click", ()=>{
+  rolloverIfNeeded();
+  if(S.claimedToday) return toast("Bugün aldın");
+  S.streak = (S.streak||0)+1;
+  const reward = streakReward(S.streak);
+  S.balance += reward;
+  S.claimedToday = true;
+  save(); render();
+  resultEl.textContent = `🎉 Günlük ödül: +${reward} ZB (streak ${S.streak})`;
+  notify("daily_claim", { reward, streak:S.streak, balance:S.balance });
+});
+
+tapBtn.addEventListener("click", ()=>{
+  rolloverIfNeeded(); regenEnergy();
+  if(S.energy < 10) return toast("Enerji yetersiz");
+  S.energy -= 10;
+  // 1–3 ZB arası rastgele
+  const rng = new Uint32Array(1); crypto.getRandomValues(rng);
+  const gain = 1 + (rng[0] % 3);
+  S.balance += gain;
+  S.lastEnergyAt = now();
+  save(); render();
+  resultEl.textContent = `⛏️ +${gain} ZB kazdın`;
+  notify("tap_mine", { gain, balance:S.balance, energy:S.energy });
+});
+
+document.querySelectorAll('[data-side]').forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    rolloverIfNeeded();
+    if(S.playsLeft <= 0) return toast("Bugünlük hak bitti");
+    const choice = btn.getAttribute("data-side");
+    const rng = new Uint32Array(1); crypto.getRandomValues(rng);
+    const coin = (rng[0] % 2) === 0 ? "YAZI" : "TURA";
+    const win = (coin === choice);
+    S.playsLeft -= 1;
+    if(win) S.balance += 5;
+    save(); render();
+    resultEl.textContent = win ? `🎉 Doğru! +5 ZB (çıkan: ${coin})` : `😅 Yanlış (çıkan: ${coin})`;
+    notify("flip", { choice, result:coin, win, delta: win?5:0, balance:S.balance, left:S.playsLeft });
+  });
+});
+
+// Ayarlar
+webhookEl.addEventListener("change", ()=>{ S.webhook = webhookEl.value.trim(); save(); toast("Webhook kaydedildi"); });
+playerEl.addEventListener("change", ()=>{ S.playerId = playerEl.value.trim(); save(); toast("Oyuncu ID kaydedildi"); });
+
+resetBtn.addEventListener("click", ()=>{
+  if(!confirm("Tüm yerel veriler silinsin mi?")) return;
+  localStorage.removeItem(LS_KEY);
+  S = null; S = load() || {
+    day: todayKey(), balance: 0, streak: 0, claimedToday: false,
+    playsLeft: 3, energy: 100, lastEnergyAt: now(), webhook:"", playerId:""
+  };
+  save(); render(); resultEl.textContent = "Veriler sıfırlandı.";
+});
+
+// Enerji periyodik dolum
+setInterval(()=>{ regenEnergy(); render(); }, 5000);
+
+// Başlat
+rolloverIfNeeded(); regenEnergy(); render();
+
+// --------- Tiny Toast ----------
+let toastTimer=null;
+function toast(msg){
+  let t = document.getElementById("toast");
+  if(!t){
+    t=document.createElement("div");
+    t.id="toast";
+    t.style.position="fixed"; t.style.left="50%"; t.style.bottom="24px";
+    t.style.transform="translateX(-50%)";
+    t.style.background="#112044"; t.style.color="#e8f0ff";
+    t.style.padding="10px 14px"; t.style.border="1px solid #2a3b6f";
+    t.style.borderRadius="10px"; t.style.fontWeight="700";
+    t.style.boxShadow="0 6px 24px #0006"; document.body.appendChild(t);
+  }
+  t.textContent = msg; t.style.opacity="1";
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=> t.style.opacity="0", 1600);
+}
+</script>
+</body>
+</html>
