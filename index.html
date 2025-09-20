@@ -2,69 +2,87 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ZBcoin – Flip & Mine</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZBcoin – Gerçekçi Yazı/Tura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0b1220; --panel:#0f1834; --ring:#1e2b55; --ink:#e8f0ff;
-  --accent:#2f80ed; --ok:#2cc36b; --warn:#ffd04d; --muted:#a9bbff;
+  --accent:#2f80ed; --ok:#27c46b; --warn:#ffd04d; --muted:#a9bbff;
+  --depth: 18px; /* kalınlık */
 }
 *{box-sizing:border-box} html,body{height:100%}
 body{margin:0;background:radial-gradient(1200px 700px at 50% -10%,#15224d,#0b1220);color:var(--ink);font-family:Inter,system-ui}
 .wrap{min-height:100%;display:grid;place-items:center;padding:24px}
-.card{width:min(1040px,96%);background:linear-gradient(180deg,#0f1834,#0c1430);
-  border:1px solid var(--ring);border-radius:22px;box-shadow:0 20px 80px #0008;overflow:hidden}
+.card{width:min(980px,96%);background:linear-gradient(180deg,#0f1834,#0c1430);
+  border:1px solid var(--ring);border-radius:22px;box-shadow:0 24px 90px #0009;overflow:hidden}
 .header{padding:18px 20px;border-bottom:1px solid var(--ring);display:flex;gap:10px;align-items:center}
-.logo{width:28px;height:28px;border-radius:50%;background:linear-gradient(#ff8a3c,#ff5b3c);display:grid;place-items:center;font-weight:900}
+.logo{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#ff7a36,#ff4f36);display:grid;place-items:center;font-weight:900}
 .h1{font-weight:800;font-size:20px;margin-right:auto}
 .pill{display:inline-flex;gap:8px;align-items:center;background:#121c45;border:1px solid var(--ring);
   padding:8px 12px;border-radius:999px;font-weight:800}
-.grid{display:grid;gap:16px;grid-template-columns:1.1fr .9fr;padding:18px}
-@media(max-width:920px){ .grid{grid-template-columns:1fr} }
-.panel{background:#0d1738;border:1px solid var(--ring);border-radius:16px;padding:14px}
-.title{margin:0 0 10px;font-weight:800}
+.grid{display:grid;gap:16px;grid-template-columns:1.2fr .8fr;padding:18px}
+@media(max-width:900px){ .grid{grid-template-columns:1fr} }
+.panel{background:#0d1738;border:1px solid var(--ring);border-radius:16px;padding:16px}
+.title{margin:0 0 12px;font-weight:800}
 .note{font-size:12px;color:var(--muted)}
-.btn{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer;transition:transform .04s ease}
+.btn{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer;transition:transform .04s ease,filter .2s}
 .btn:active{transform:translateY(1px)}
 .btn.primary{background:var(--accent);color:#fff}
 .btn.ok{background:var(--ok);color:#061016}
 .btn.warn{background:var(--warn);color:#111}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.bar{height:12px;background:#101b44;border:1px solid var(--ring);border-radius:999px;overflow:hidden}
-.fill{height:100%;background:linear-gradient(90deg,#2f80ed,#6aa2ff)}
 .center{display:grid;place-items:center}
 
-/* --- 3D Coin --- */
-.stage{position:relative;height:340px;display:grid;place-items:center}
-.coin{width:200px;height:200px;position:relative;transform-style:preserve-3d;
-  filter:drop-shadow(0 18px 20px #0008);transition:transform .2s ease}
-.face{position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 30% 30%,#ffe58a,#ffc73c 40%,#ffb000 60%,#ff9a00);
-  border:4px solid #ffb000;display:grid;place-items:center;font-weight:900;color:#5b3b00;
-  text-shadow:0 1px 0 #fff7,0 -1px 0 #0002;}
-.edge{position:absolute;inset:0;border-radius:50%;transform:translateZ(-10px) rotateY(90deg);
-  width:20px;left:calc(50% - 10px);background:repeating-linear-gradient(#c98a00 0 6px,#f2b400 6px 12px)}
-.back{transform:translateZ(10px) rotateY(180deg);background:radial-gradient(circle at 70% 30%,#ffe58a,#ffc73c 40%,#ffb000 60%,#ff9a00)}
-.front{transform:translateZ(10px)}
-.coin.spin{animation:flip 1.4s cubic-bezier(.22,.8,.26,1) forwards}
+/* ---------- SAHNE ---------- */
+.stage{height:420px;position:relative;display:grid;place-items:center;perspective:1600px}
+.shadow{position:absolute;bottom:54px;width:260px;height:90px;border-radius:50%;
+  background:radial-gradient(ellipse at center, #0008 0%, #0006 40%, #0000 70%);
+  filter:blur(12px);transform-origin:center;transition:filter .2s}
+.msg{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-weight:800;letter-spacing:.5px}
+
+/* ---------- 3D COIN ---------- */
+.coin{position:absolute;width:240px;height:240px;transform-style:preserve-3d;
+  filter:drop-shadow(0 22px 26px #0008)}
+.face{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;
+  font-weight:900;letter-spacing:.5px;font-size:44px;color:#0c0c0c;text-shadow:0 1px 0 #fff7}
+.front{transform:translateZ(calc(var(--depth))); 
+  background:radial-gradient(circle at 35% 30%,#fff0ab,#ffd670 40%,#ffbd38 62%,#ffa600 78%,#ff9700 100%);
+  border:4px solid #ffb000}
+.back{transform:translateZ(calc(var(--depth))) rotateY(180deg);
+  background:radial-gradient(circle at 65% 35%,#e7efff,#bcd1ff 40%,#7da1ff 62%,#4a74ff 78%,#2f59ff 100%);
+  border:4px solid #6f8fff}
+
+/* kenar (yivli) */
+.rim{position:absolute;inset:0;border-radius:50%;transform:translateZ(calc(var(--depth) * -1)) rotateY(90deg);
+  width:calc(var(--depth) * 2); left:calc(50% - var(--depth));
+  background:repeating-linear-gradient(#c88900 0 6px,#f2b400 6px 12px)}
+
+/* Motion blur efektini taklit için spin sırasında blur uygularız */
+.coin.spinning{filter:drop-shadow(0 22px 26px #0008) blur(0.3px)}
+
+/* Flip animasyonu (son açı JS ile --rotX değişkeni) */
+.coin.anim{animation:flip var(--dur,1.8s) cubic-bezier(.2,.7,.15,1) forwards}
 @keyframes flip{
-  0%{transform:rotateX(0) rotateZ(0)}
-  30%{transform:rotateX(460deg) rotateZ(15deg)}
-  60%{transform:rotateX(980deg) rotateZ(-10deg)}
-  100%{transform:rotateX(var(--end-rot,1220deg)) rotateZ(0)}
+  0%{transform:rotateX(0deg) rotateZ(0) translateZ(0)}
+  100%{transform:rotateX(var(--rotX,1440deg)) rotateZ(0) translateZ(0)}
 }
 
-/* Mining tap area + particles */
-.mineArea{height:240px;border:1px dashed #2a3b6f;border-radius:14px;display:grid;place-items:center;position:relative;overflow:hidden}
-.burst{position:absolute;width:6px;height:6px;border-radius:50%;background:#ffd66e;box-shadow:0 0 10px #ffd66eAA}
-.big{font-size:48px;font-weight:900;letter-spacing:1px;background:linear-gradient(#eef,#bcd);
-  -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 12px 40px #0008}
-.small{font-size:13px;color:var(--muted)}
-.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#121c45;border:1px solid var(--ring);font-size:12px}
+/* hafif wobble (düşüş sonrası) */
+.coin.wobble{animation:wob .9s ease-out}
+@keyframes wob{
+  0%{transform:rotateX(var(--rotX)) rotateZ(0)}
+  30%{transform:rotateX(calc(var(--rotX) + 6deg)) rotateZ(.6deg)}
+  60%{transform:rotateX(calc(var(--rotX) - 3deg)) rotateZ(-.3deg)}
+  100%{transform:rotateX(var(--rotX)) rotateZ(0)}
+}
 
-/* footer */
-.footer{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;color:#9ab1ff80;padding:12px 18px;border-top:1px solid var(--ring)}
+/* alt efsane */
+.legend{display:flex;gap:10px;justify-content:center;margin-top:6px}
+.legend .chip{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--ring);background:#121c45}
+.legend .y{color:#2f59ff}
+.legend .t{color:#ff6a6a}
 </style>
 </head>
 <body>
@@ -72,209 +90,210 @@ body{margin:0;background:radial-gradient(1200px 700px at 50% -10%,#15224d,#0b122
   <div class="card">
     <div class="header">
       <div class="logo">Z</div>
-      <div class="h1">ZBcoin – Flip & Mine</div>
+      <div class="h1">ZBcoin – Gerçekçi Yazı/Tura</div>
       <div class="pill">Bakiye: <span id="bal">0</span> ZB</div>
-      <div class="pill">Streak: <span id="streak">0</span> gün</div>
-      <div class="pill">Enerji: <span id="energyText">0/100</span></div>
+      <div class="pill">Günlük Hak: <span id="left">3</span></div>
     </div>
 
     <div class="grid">
-      <!-- SOL: Coin Flip + Mining -->
+      <!-- Oyun -->
       <div class="panel">
         <h3 class="title">🎲 Coin Flip</h3>
-        <div class="stage">
-          <div id="coin" class="coin">
-            <div class="face front">ZB</div>
-            <div class="edge"></div>
-            <div class="face back">★</div>
+        <div class="stage" id="stage">
+          <div class="msg" id="msg">Seç → Fırlat</div>
+          <div class="shadow" id="shadow"></div>
+          <div class="coin" id="coin" aria-label="Yazı/Tura">
+            <div class="face front">YAZI</div>
+            <div class="rim"></div>
+            <div class="face back">TURA</div>
+          </div>
+          <div class="legend">
+            <span class="chip y">ÖN = YAZI</span>
+            <span class="chip t">ARKA = TURA</span>
           </div>
         </div>
-        <div class="row" style="justify-content:center;margin-top:-8px">
-          <button class="btn" id="pickHeads">Yazı</button>
-          <button class="btn" id="pickTails">Tura</button>
-          <span class="badge">Günlük hak: <span id="playsLeft">3</span></span>
+        <div class="row center" style="margin-top:6px">
+          <button class="btn" id="btnY">Yazı</button>
+          <button class="btn" id="btnT">Tura</button>
+          <button class="btn primary" id="btnThrow">FIRLAT</button>
         </div>
-        <div id="flipResult" class="center" style="min-height:34px;margin:10px 0;font-weight:800"></div>
-
-        <h3 class="title" style="margin-top:16px">⛏️ Tap Mining</h3>
-        <div id="mine" class="mineArea">
-          <div class="center">
-            <div class="big">TIKLA</div>
-            <div class="small">Her tık 10 enerji harcar → +1~3 ZB</div>
-          </div>
-        </div>
-        <div class="row" style="margin-top:10px;gap:12px">
-          <div style="flex:1">
-            <div class="bar"><div id="energyFill" class="fill" style="width:0%"></div></div>
-          </div>
-          <button id="claimBtn" class="btn ok">Daily Claim</button>
-          <span id="claimState" class="badge">Hazır</span>
-        </div>
+        <div class="center" style="min-height:36px;margin-top:8px;font-weight:800" id="result"></div>
       </div>
 
-      <!-- SAĞ: Ayarlar -->
+      <!-- Ayarlar -->
       <div class="panel">
         <h3 class="title">Ayarlar</h3>
         <div class="row" style="gap:12px">
           <div style="flex:1">
             <div class="note">Webhook (Apps Script / API – opsiyonel)</div>
-            <input id="webhook" placeholder="https://script.google.com/.../exec" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--ring);background:#0c1530;color:#cfe3ff">
+            <input id="webhook" placeholder="https://script.google.com/.../exec"
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--ring);background:#0c1530;color:#cfe3ff">
           </div>
           <div style="flex:1">
             <div class="note">Oyuncu ID (Telegram id / username)</div>
-            <input id="player" placeholder="@kullanici veya 123456" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--ring);background:#0c1530;color:#cfe3ff">
+            <input id="player" placeholder="@kullanici veya 123456"
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--ring);background:#0c1530;color:#cfe3ff">
           </div>
         </div>
         <div class="row" style="margin-top:10px">
-          <button id="resetBtn" class="btn warn">Veriyi Sıfırla</button>
-          <div class="note" style="margin-left:auto">Enerji dakikada 10 dolar • Günlük haklar 00:00’da yenilenir</div>
+          <button class="btn warn" id="reset">Veriyi Sıfırla</button>
+          <div class="note" style="margin-left:auto">Adil RNG: <code>crypto.getRandomValues</code> • Telegram Mini-App uyumlu</div>
         </div>
       </div>
-    </div>
-
-    <div class="footer">
-      <div>Adil rastgelelik: <code>crypto.getRandomValues</code></div>
-      <div>Telegram Mini App uyumlu: açılınca genişler, <code>sendData</code> ile veri gönderir</div>
     </div>
   </div>
 </div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
+/* ====== Telegram genişletme ====== */
 const tg = window.Telegram?.WebApp; try{ tg?.expand(); }catch(e){}
 
-/* ---------- STATE ---------- */
-const LS="zb_v2";
-const now=()=>Date.now();
-const today=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
-let S = load() || { day:today(), bal:0, streak:0, claimed:false, plays:3, energy:100, lastEnergy:now(), webhook:"", pid:"" };
-
-const ENERGY_MAX=100, ENERGY_PER_MIN=10;
-
-/* ---------- DOM ---------- */
-const balEl = q('#bal'), streakEl=q('#streak'), energyText=q('#energyText'), energyFill=q('#energyFill');
-const playsLeftEl=q('#playsLeft'), claimBtn=q('#claimBtn'), claimState=q('#claimState');
-const pickHeads=q('#pickHeads'), pickTails=q('#pickTails'), mine=q('#mine'), flipResult=q('#flipResult');
-const coin=q('#coin'), webhookEl=q('#webhook'), playerEl=q('#player'), resetBtn=q('#resetBtn');
-
-function q(s){return document.querySelector(s)}
-function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
+/* ====== Basit durum ====== */
+const LS="zb_flip_v3";
+const S = load() || { bal:0, left:3, pick:null, webhook:"", pid:"" };
 function load(){ try{return JSON.parse(localStorage.getItem(LS)||"")}catch(_){return null} }
-function rollover(){
-  if(S.day!==today()){ S.day=today(); S.claimed=false; S.plays=3; save(); }
-}
-function regen(){
-  const dt=now()-(S.lastEnergy||now());
-  const mins=Math.floor(dt/60000);
-  if(mins>0){ S.energy=Math.min(ENERGY_MAX,S.energy+mins*ENERGY_PER_MIN); S.lastEnergy=now(); save(); }
-}
-function fibReward(n){ const f=[0,1,2]; for(let i=3;i<=n;i++)f[i]=f[i-1]+f[i-2]; return Math.min(100,f[n]||1); }
+function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
+
+/* ====== Elemanlar ====== */
+const balEl = document.getElementById('bal');
+const leftEl= document.getElementById('left');
+const resultEl=document.getElementById('result');
+const coin = document.getElementById('coin');
+const shadow=document.getElementById('shadow');
+const msg = document.getElementById('msg');
+const btnY = document.getElementById('btnY');
+const btnT = document.getElementById('btnT');
+const btnThrow = document.getElementById('btnThrow');
+const webhookEl = document.getElementById('webhook');
+const playerEl  = document.getElementById('player');
+const resetBtn  = document.getElementById('reset');
+
+/* ====== UI ====== */
+render();
 function render(){
-  balEl.textContent=S.bal; streakEl.textContent=S.streak; playsLeftEl.textContent=S.plays;
-  energyText.textContent=`${S.energy}/${ENERGY_MAX}`; energyFill.style.width=`${(S.energy/ENERGY_MAX)*100}%`;
-  claimBtn.disabled=S.claimed; claimState.textContent=S.claimed?"Alındı":"Hazır";
-  webhookEl.value=S.webhook||""; playerEl.value=S.pid||"";
+  balEl.textContent = S.bal;
+  leftEl.textContent= S.left;
+  webhookEl.value = S.webhook || "";
+  playerEl.value  = S.pid || "";
+  btnY.classList.toggle('ok', S.pick==="YAZI");
+  btnT.classList.toggle('ok', S.pick==="TURA");
 }
 
-/* ---------- FLIP (GERÇEK ANİMASYON) ---------- */
-function doFlip(choice){
-  rollover(); if(S.plays<=0) return toast("Günlük flip hakkı bitti");
-  S.plays--; save(); render();
+/* ====== Ses (WebAudio) ====== */
+const AC = window.AudioContext || window.webkitAudioContext;
+let actx=null;
+function audioReady(){ if(!AC) return; if(!actx) actx=new AC(); }
+function fxWhoosh(){
+  if(!actx) return; const o=actx.createOscillator(), g=actx.createGain();
+  o.type='sawtooth'; o.frequency.setValueAtTime(180, actx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(60, actx.currentTime+0.6);
+  g.gain.setValueAtTime(0.0001, actx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.2, actx.currentTime+0.08);
+  g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime+0.7);
+  o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime+0.72);
+}
+function fxDing(){
+  if(!actx) return; const o=actx.createOscillator(), g=actx.createGain();
+  o.type='triangle'; o.frequency.setValueAtTime(880, actx.currentTime);
+  g.gain.setValueAtTime(0.0001, actx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.35, actx.currentTime+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime+0.5);
+  o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime+0.52);
+}
 
-  // adil sonuç
+/* ====== Etkileşim ====== */
+btnY.onclick=()=>{ S.pick="YAZI"; save(); render(); msg.textContent="Seçim: YAZI"; };
+btnT.onclick=()=>{ S.pick="TURA"; save(); render(); msg.textContent="Seçim: TURA"; };
+
+btnThrow.onclick=()=>{
+  audioReady();
+  if(S.left<=0) return toast("Günlük hakkın bitti");
+  if(!S.pick)   return toast("Yazı mı Tura mı seç");
+  spinOnce(S.pick);
+};
+
+resetBtn.onclick=()=>{ if(!confirm("Tüm yerel veriler sıfırlansın mı?")) return;
+  localStorage.removeItem(LS); location.reload();
+};
+webhookEl.onchange=()=>{ S.webhook=webhookEl.value.trim(); save(); toast("Webhook kaydedildi"); };
+playerEl.onchange =()=>{ S.pid=playerEl.value.trim(); save(); toast("ID kaydedildi"); };
+
+/* ====== Gerçekçi animasyon + adil sonuç ====== */
+let busy=false;
+function spinOnce(choice){
+  if(busy) return; busy=true; btnThrow.disabled=true;
+  // Adil sonuç (0=Yazı, 1=Tura)
   const u32=new Uint32Array(1); crypto.getRandomValues(u32);
-  const result = (u32[0]%2)===0 ? "YAZI":"TURA";
-  const endRot = result==="YAZI" ? 1440 : 1530; // final yüzü; 1440=4 tur, 1530=4.25 tur
-  coin.style.setProperty('--end-rot', endRot+'deg');
-  coin.classList.remove('spin'); void coin.offsetWidth; coin.classList.add('spin');
+  const result = (u32[0]%2)===0 ? "YAZI" : "TURA";
 
-  setTimeout(()=>{
-    const win = (result===choice);
+  // Fizikvari parametreler
+  //  - başlangıç açısal hız (rastgele), sürtünme ~ süre
+  //  - hedefine göre toplam dönüş: FRONT(YAZI)=n*360, BACK(TURA)=n*360+180
+  const baseTurns = 6 + Math.floor(Math.random()*3); // 6-8 tam tur
+  const endDeg = result==="YAZI" ? baseTurns*360 : baseTurns*360 + 180;
+
+  // küçük rastgele wobble payı (landing hissi)
+  const dur = 1.65 + Math.random()*0.45; // 1.65-2.1s
+  coin.style.setProperty('--rotX', endDeg+'deg');
+  coin.style.setProperty('--dur', dur+'s');
+
+  // animasyonu başlat
+  coin.classList.remove('anim','wobble');
+  void coin.offsetWidth; // reflow
+  coin.classList.add('anim','spinning');
+  msg.textContent="Fırlatıldı…";
+  fxWhoosh();
+  navigator.vibrate?.(10);
+
+  // gölge/motion blur için süre boyunca ufak efekt
+  const t0=performance.now();
+  (function raf(t){
+    const k = Math.min(1,(t-t0)/(dur*1000));
+    // havadaymış hissi: gölge küçülür/uzar
+    const scale = 1 + Math.sin(k*Math.PI)*0.25;
+    shadow.style.transform = `scale(${scale}, ${1/scale})`;
+    shadow.style.filter = `blur(${12 + 10*Math.sin(k*Math.PI)}px)`;
+    if(k<1) requestAnimationFrame(raf);
+  })(t0);
+
+  // bittiğinde sonucu işle
+  setTimeout(()=> {
+    coin.classList.remove('spinning');
+    coin.classList.add('wobble');
+    fxDing();
+    S.left--; const win = (result===choice);
     if(win) S.bal += 5;
     save(); render();
-    flipResult.textContent = win ? `🎉 Doğru! +5 ZB (çıkan: ${result})` : `😅 Yanlış (çıkan: ${result})`;
-    send('flip',{choice,result,win,delta:win?5:0,balance:S.bal,left:S.plays});
-    navigator.vibrate?.(win?[25,40,25]:[12]);
-  }, 1450);
+    msg.textContent = result==="YAZI" ? "Sonuç: YAZI (ÖN)" : "Sonuç: TURA (ARKA)";
+    resultEl.textContent = win ? `🎉 Doğru bildin! +5 ZB` : `😅 Yanlış tahmin`;
+    navigator.vibrate?.(win?[20,40,20]:[12]);
+
+    // Telegram & webhook bildirimi
+    send('flip',{choice,result,win,delta:win?5:0,balance:S.bal,left:S.left});
+
+    btnThrow.disabled=false; busy=false;
+  }, dur*1000 + 40);
 }
 
-/* ---------- MINING + PARÇACIK ---------- */
-mine.addEventListener('click', e=>{
-  rollover(); regen();
-  if(S.energy<10) return toast("Enerji yetersiz");
-  S.energy-=10; S.lastEnergy=now();
-
-  const u32=new Uint32Array(1); crypto.getRandomValues(u32);
-  const gain = 1 + (u32[0]%3);
-  S.bal += gain; save(); render();
-  burst(e.offsetX,e.offsetY,mine,gain);
-  send('mine',{gain,balance:S.bal,energy:S.energy});
-  navigator.vibrate?.(10);
-});
-
-function burst(x,y,box,gain){
-  const rect=box.getBoundingClientRect();
-  for(let i=0;i<16;i++){
-    const d=document.createElement('div'); d.className='burst';
-    d.style.left=(x)+'px'; d.style.top=(y)+'px';
-    box.appendChild(d);
-    const ang=Math.random()*Math.PI*2, sp=2+Math.random()*4, life=600+Math.random()*400;
-    const dx=Math.cos(ang)*sp, dy=Math.sin(ang)*sp;
-    const start=performance.now();
-    (function anim(t){
-      const k=Math.min(1,(t-start)/life);
-      d.style.transform=`translate(${dx*60*k}px,${dy*60*k}px) scale(${1-k})`;
-      d.style.opacity=String(1-k);
-      if(k<1) requestAnimationFrame(anim); else d.remove();
-    })(start);
-  }
-  const tag=document.createElement('div');
-  tag.textContent=`+${gain} ZB`; tag.style.position='absolute';
-  tag.style.left=(x-10)+'px'; tag.style.top=(y-6)+'px'; tag.style.fontWeight='900';
-  tag.style.textShadow='0 6px 16px #0008'; box.appendChild(tag);
-  const s=performance.now();
-  (function up(t){const k=Math.min(1,(t-s)/900); tag.style.transform=`translateY(${-38*k}px)`; tag.style.opacity=String(1-k);
-    if(k<1) requestAnimationFrame(up); else tag.remove();})(s);
-}
-
-/* ---------- DAILY CLAIM ---------- */
-claimBtn.addEventListener('click', ()=>{
-  rollover(); if(S.claimed) return;
-  S.streak++; const r=fibReward(S.streak); S.bal+=r; S.claimed=true; save(); render();
-  toast(`Günlük ödül: +${r} ZB (streak ${S.streak})`);
-  send('claim',{reward:r,streak:S.streak,balance:S.bal});
-  navigator.vibrate?.([15,30,15]);
-});
-
-/* ---------- Ayarlar + yardımcı ---------- */
-webhookEl.addEventListener('change',()=>{S.webhook=webhookEl.value.trim(); save(); toast('Webhook kaydedildi')});
-playerEl.addEventListener('change',()=>{S.pid=playerEl.value.trim(); save(); toast('ID kaydedildi')});
-resetBtn.addEventListener('click',()=>{ if(!confirm('Tüm yerel veriler silinsin mi?'))return;
-  localStorage.removeItem(LS); S=null; S=load()||{day:today(),bal:0,streak:0,claimed:false,plays:3,energy:100,lastEnergy:now(),webhook:"",pid:""}; save(); render(); flipResult.textContent='Veriler sıfırlandı.';});
-
-pickHeads.onclick=()=>doFlip("YAZI");
-pickTails.onclick=()=>doFlip("TURA");
-
-/* periodic */
-setInterval(()=>{ regen(); render(); }, 3000);
-
-/* start */
-rollover(); regen(); render();
-
-/* send to Telegram + webhook */
-async function send(event,payload){
-  try{ window.Telegram?.WebApp?.sendData && window.Telegram.WebApp.sendData(JSON.stringify({event,...payload})); }catch(_){}
+/* ====== Telegram + Webhook ====== */
+async function send(event, payload){
+  try{ window.Telegram?.WebApp?.sendData && window.Telegram.WebApp.sendData(JSON.stringify({event, ...payload})); }catch(_){}
   if(!S.webhook) return;
-  try{ await fetch(S.webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event,playerId:S.pid||null,when:Date.now(),...payload})}); }catch(_){}
+  try{
+    await fetch(S.webhook,{method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({event, playerId:S.pid||null, when: Date.now(), ...payload})});
+  }catch(_){}
 }
 
-/* toast */
+/* ====== Mini toast ====== */
 let toastT=null;
 function toast(msg){
   let el=document.getElementById('toast');
   if(!el){ el=document.createElement('div'); el.id='toast';
-    el.style.position='fixed'; el.style.left='50%'; el.style.bottom='22px'; el.style.transform='translateX(-50%)';
-    el.style.background='#12204b'; el.style.border='1px solid var(--ring)'; el.style.padding='10px 14px';
+    el.style.position='fixed'; el.style.left='50%'; el.style.bottom='22px';
+    el.style.transform='translateX(-50%)'; el.style.background='#12204b';
+    el.style.border='1px solid var(--ring)'; el.style.padding='10px 14px';
     el.style.borderRadius='10px'; el.style.boxShadow='0 10px 30px #0008'; el.style.fontWeight='800';
     document.body.appendChild(el);
   }
